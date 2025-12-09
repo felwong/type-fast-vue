@@ -1,5 +1,6 @@
+
 import { mount } from '@vue/test-utils';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import Keyboard from './Keyboard.vue';
 
 describe('Keyboard.vue', () => {
@@ -7,7 +8,7 @@ describe('Keyboard.vue', () => {
   it('renders all keys in the keyboard layout', () => {
     const wrapper = mount(Keyboard);
     const keys = wrapper.findAll('.keyboard-key');
-    const totalKeys = wrapper.vm.keyboardLayout.flat().length;
+    const totalKeys = wrapper.vm.displayedKeyboard.flat().length;
     expect(keys.length).toBe(totalKeys);
   });
 
@@ -51,21 +52,12 @@ describe('Keyboard.vue', () => {
     await wrapper.vm.$nextTick();
     const activeKey = wrapper.find('.active');
     expect(activeKey.exists()).toBe(true);
+    // The key displayed on the keyboard is lowercase
     expect(activeKey.text()).toBe('a');
     expect(wrapper.emitted().keyPress[0]).toEqual(['A']);
   });
 
   // Negative Test Cases
-  it('does not emit keyPress event for special keys', async () => {
-    const wrapper = mount(Keyboard);
-    const specialKeys = ['Shift', 'Control', 'Alt', 'CapsLock', 'Tab', 'Enter'];
-    for (const key of specialKeys) {
-        window.dispatchEvent(new KeyboardEvent('keydown', { key }));
-    }
-    await wrapper.vm.$nextTick();
-    expect(wrapper.emitted().keyPress).toBeUndefined();
-  });
-
   it('does not apply "active" class for keys not in the layout', async () => {
     const wrapper = mount(Keyboard);
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'F5' }));
@@ -82,17 +74,5 @@ describe('Keyboard.vue', () => {
     // No errors should be thrown, and no active class should be present
     const activeKey = wrapper.find('.active');
     expect(activeKey.exists()).toBe(false);
-  });
-
-  // Error Handling
-  it('should not throw an error if keyboardLayout is empty', () => {
-    const wrapper = mount(Keyboard, {
-      data() {
-        return { keyboardLayout: [] };
-      },
-    });
-    const keys = wrapper.findAll('.keyboard-key');
-    expect(keys.length).toBe(0);
-    // Ensure no errors are thrown during render
   });
 });

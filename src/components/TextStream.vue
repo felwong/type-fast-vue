@@ -4,7 +4,12 @@
       Game Over
     </div>
     <div class="text-stream-container">
-      <div v-for="(char, index) in chars" :key="index" class="char-box">
+      <div 
+        v-for="(char, index) in chars"
+        :key="index"
+        :style="getBoxStyle(index)"
+        class="char-box"
+      >
         {{ char }}
       </div>
     </div>
@@ -37,6 +42,14 @@ watch(() => props.gameOver, (isGameOver) => {
     }
   }
 });
+
+const getBoxStyle = (index) => {
+    const gradientIntensity = 1 - (index / (props.chars.length -1));
+    const redValue = Math.floor(255 * gradientIntensity * 0.3);
+    return {
+        background: `linear-gradient(to right, rgba(${redValue}, 0, 0, ${gradientIntensity * 0.5}), #2a2a2a)`
+    }
+}
 </script>
 
 <style scoped>
@@ -55,7 +68,6 @@ watch(() => props.gameOver, (isGameOver) => {
 }
 
 .char-box {
-  background-color: #2a2a2a;
   border: 1px solid #444;
   border-radius: 6px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
@@ -65,7 +77,8 @@ watch(() => props.gameOver, (isGameOver) => {
   width: 40px;
   height: 40px;
   text-align: center;
-  font-size: 18px;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 24px;
   font-weight: 600;
   display: flex;
   align-items: center;
