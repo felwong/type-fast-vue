@@ -8,7 +8,7 @@
         v-for="(char, index) in chars"
         :key="index"
         :style="getBoxStyle(index)"
-        class="char-box"
+        :class="{'char-box':true,'glowing-textbox':glowing(index)}"
       >
         {{ char }}
       </div>
@@ -18,7 +18,6 @@
       <input id="delay-input" type="number" :value="delay" @input="$emit('update:delay', parseFloat($event.target.value))" step="0.1" />
       <button @click="$emit('reset')">Reset</button>
     </div>
-    <audio ref="losingAudio" src="https://soundbible.com/mp3/fail-trombone-01.mp3"></audio>
   </div>
 </template>
 
@@ -50,6 +49,11 @@ const getBoxStyle = (index) => {
         background: `linear-gradient(to right, rgba(${redValue}, 0, 0, ${gradientIntensity * 0.5}), #2a2a2a)`
     }
 }
+
+const glowing = (index) => {
+  return index==0;
+}
+
 </script>
 
 <style scoped>
@@ -89,6 +93,7 @@ const getBoxStyle = (index) => {
   margin-top: 20px;
   color: #fff;
   text-align: center;
+  display:none;
 }
 
 #delay-input {
@@ -124,5 +129,12 @@ button {
   margin: 4px 2px;
   cursor: pointer;
   border-radius: 5px;
+}
+
+.glowing-textbox {
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.8); 
+  
+  /* Optional: you can also set a subtle red border to match */
+  border: 1px solid red;
 }
 </style>

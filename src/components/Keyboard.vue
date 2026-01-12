@@ -219,4 +219,10 @@ onUnmounted(() => {
 .keyboard-key.space-key {
     min-width: 300px;
 }
+
+@media (width <= 1200px) {
+  .keyboard-container {
+    display:none;
+  }
+}
 </style>

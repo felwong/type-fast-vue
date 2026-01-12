@@ -5,7 +5,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #242424;button
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -31,21 +31,30 @@ body {
 }
 
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  font-size: 2.5em;
+  line-height: 0.5;
+  color: #eeeeee;
+  margin-bottom: em;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
+h2 {
+  font-size: 1.5em;
+  color: #eeeeee;
 }
+
+
+button {
+  background-color: #ffc107;
+  color: #1a1a1a;
+  padding: 8px 16px;
+  font-size: 0.8em;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: all 0.2s ease-in-out;
+}
+
 button:hover {
   border-color: #646cff;
 }

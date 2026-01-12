@@ -4,18 +4,32 @@ import TextStream from './TextStream.vue'
 import Keyboard from './Keyboard.vue'
 import GameOver from './GameOver.vue'
 import $ from 'jquery';
-
+import { useRoute } from 'vue-router';
+import mySound from '/click.mp3';
+import errorSound from '/error.mp3';
+import gameOvermp3 from '/gameover.mp3';
+import levelUp from '/levelup.mp3';
+import { error } from 'jquery';
+const route = useRoute();
 
 // --- State Management ---
 
 const textStream = ref([]);
+const friendmsg = ref([]);
 const chars = ref(Array(15).fill('')); // The character stream display
 const delay = ref(0.8); // Time in seconds between character shifts
 const score = ref(0);
+const level = ref(1);
 const gameOver = ref(false);
 const gameStarted = ref(false);
 const wpm = ref(0);
 const startTime = ref(0);
+const parmobj=ref({});
+const showingFriendMsg=ref(false);
+const goodAudio = new Audio(mySound);
+const errorAudio =  new Audio(errorSound);
+const gameOverAudio = new Audio(gameOvermp3);
+const levelupAudio = new Audio(levelUp);
 
 // --- New Game Mode Switches ---
 
@@ -23,12 +37,14 @@ const isCaseSensitive = ref(false);
 
 const fetchTextStream = () => {
   $.ajax({
-    url: '/api/game/start',
+    url: 'https://type-fast.net:9999/game/getRandom',
     type: 'POST',
     contentType: "application/json;charset=utf-8",
     dataType: "json",
     success: function(result) {
-      textStream.value.push(...result);
+      console.log("fetching text succeed");
+      const arrayOfText = result.map(object => object.text);
+      textStream.value.push(...arrayOfText);
     },
     error: function(jqXHR, textStatus, errorThrown) {
       console.error("AJAX call failed:", textStatus, errorThrown);
@@ -40,9 +56,33 @@ const fetchTextStream = () => {
   });
 };
 
+const fetchFriendMsg = () => {
+console.log(JSON.stringify(parmobj));
+  $.ajax({
+    url: 'https://type-fast.net:9999/game/retrieve',
+    type: 'POST',
+    contentType: "application/json;charset=utf-8",
+    dataType: "json",
+    data:JSON.stringify(parmobj),
+    success: function(result) {
+      const arrayOfText = result.map(object=>object.message);
+      console.log("fetching friend msg succeed "+ arrayOfText.length);
+      friendmsg.value.push(...arrayOfText);
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      console.error("fetching friend msg failed:", textStatus, errorThrown);
+      friendmsg.value = [];
+      // Handle error, maybe with a default sentence  
+    }
+  });
+};
+
 onMounted(() => {
     console.log("fetching");
+    parmobj.email=route.query.email;
+    parmobj.oid=route.query.oid;
     fetchTextStream();
+    fetchFriendMsg();
 });
 
 
@@ -61,16 +101,17 @@ watch(isCaseSensitive, () => {
 });
 
 watch(score, (newScore) => {
-  if (newScore > 0 && newScore % 50 === 0) {
+  if (newScore > 0 && newScore >(level.value*50* ((level.value-1)*0.1+1) ) ) {
     const newDelay = Math.max(0.05, delay.value * 0.9);
     if (newDelay !== delay.value) {
       delay.value = newDelay;
+      level.value++;
+      levelupAudio.play();
       clearInterval(gameInterval);
       gameInterval = setInterval(gameTick, delay.value * 1000);
     }
   }
 });
-
 
 // --- Helper Functions ---
 
@@ -80,7 +121,6 @@ const calculateWPM = () => {
     wpm.value = Math.round((score.value / 5) / elapsedTime);
   }
 }
-
 
 // --- Game Lifecycle ---
 
@@ -117,6 +157,20 @@ const resetGame = () => {
   wpmInterval = setInterval(calculateWPM, 2000);
 };
 
+const markRead = () => {
+   $.ajax({
+    url: 'https://type-fast.net:9999/game/read',
+    type: 'POST',
+    contentType: "application/json;charset=utf-8",
+    dataType: "json",
+    data:JSON.stringify(parmobj),
+    success: function(result) {
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+    }
+  });
+}
+
 // --- Core Game Logic ---
 
 
@@ -127,6 +181,7 @@ const gameTick = () => {
   const firstChar = chars.value[0];
   if (firstChar && firstChar !== ' ') {
     gameOver.value = true;
+    gameOverAudio.play();
     clearInterval(gameInterval);
     clearInterval(wpmInterval);
     return; // Stop the game
@@ -137,15 +192,24 @@ const gameTick = () => {
   
   // 3. ADD A NEW CHARACTER
   if (charIndex >= currentSentence.length) {
-      if (textStream.value.length > 0) {
-          currentSentence = textStream.value.shift();
-          if (textStream.value.length < 5) {
-              fetchTextStream();
-          }
+      if (friendmsg.value.length>0 && ((Math.random()>=0.5)? 1 : 0)) {
+        currentSentence = friendmsg.value.shift();
+        showingFriendMsg.value =  true;
       } else {
-          // If the stream is empty, fetch more and wait.
-          fetchTextStream();
-          currentSentence = ""; 
+        if (textStream.value.length > 0) {
+            if (showingFriendMsg) {
+              showingFriendMsg.value=false;
+              markRead();
+            }
+            currentSentence = textStream.value.shift();
+            if (textStream.value.length < 5) {
+                fetchTextStream();
+            }
+        } else {
+            // If the stream is empty, fetch more and wait.
+            fetchTextStream();
+            currentSentence = ""; 
+        }
       }
       charIndex = 0;
   }
@@ -174,9 +238,11 @@ const handleKeyPress = (key) => {
     if (isMatch) {
       // SUCCESS!
       score.value++;
-      
+      goodAudio.play();
       // Clear the matched character from the stream.
       chars.value[targetCharIndex] = '';
+    } else {
+      errorAudio.play();
     }
   }
 };
@@ -197,7 +263,19 @@ onUnmounted(() => {
 <template>
   <div id="app-container">
     <div v-if="!gameStarted" class="start-container">
+      <h1>Boost Your Typing Speed and Accuracy with Our Fun Game</h1>
+      <h2>Ready to Challenge a Friend? Send a Custom Message Before You Leave!</h2>
+      <div>
+        Eg. Hey Bro, get well soon. | Can we be friends? | Wish you luck in the upcoming examinations!!!
+      </div>
       <button @click="startGame" class="start-button">Start Game</button>
+      <div>
+        By continuing, you acknowledged you have read and agreed to the <router-link to="/terms">Terms and condition</router-link>
+      </div>
+      <div class="footer">
+        For support, please contact <a href="mailto:support@type-fast.net">support@type-fast.net</a> <br/>
+        For advertising, please contact <a href="mailto:commerce@type-fast.net">commerce@type-fast.net</a>
+      </div>
     </div>
 
     <div v-else-if="!gameOver" class="game-container">
@@ -211,7 +289,7 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <div class="score-display">Score: {{ score }} | WPM: {{ wpm }}</div>
+      <div class="score-display">Level: {{  level }} | Score: {{ score }} | WPM: {{ wpm }}</div>
       <TextStream 
           :chars="chars" 
           :gameOver="gameOver" 
@@ -365,5 +443,9 @@ input:checked + .slider:before {
   font-weight: bold;
   margin-bottom: 0;
   text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.footer {
+  font-size: 0.8em;
 }
 </style>

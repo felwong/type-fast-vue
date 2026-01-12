@@ -1,5 +1,7 @@
 <script setup>
 import { defineProps, defineEmits } from 'vue';
+import invite from './Invite.vue'
+import rank from './Rank.vue'
 
 defineProps({
   score: {
@@ -21,7 +23,7 @@ const playAgain = () => {
 
 <template>
   <div class="game-over-container">
-    <h1>Game Over</h1>
+    <h1>Game Over.</h1>
     <div class="stats-container">
       <div class="stat">
         <label>Score</label>
@@ -37,15 +39,19 @@ const playAgain = () => {
       <button @click="playAgain" class="play-again-button">Play Again</button>
     </div>
 
-    <div class="donation-section">
-      <p>Your support is needed to keep our project running.</p>
-      <div class="donation-buttons">
-        <a href="https://buy.stripe.com/test_eVqeVceSF4us6oPb24g3601" target="_blank" rel="noopener noreferrer" class="donate-link">Donate AUD$1</a>
-        <a href="https://buy.stripe.com/test_bJecN4dOB6CA5kL2vyg3602" target="_blank" rel="noopener noreferrer" class="donate-link">Donate AUD$2</a>
-        <a href="https://buy.stripe.com/test_00w14m8uh3qo7sT7PSg3603" target="_blank" rel="noopener noreferrer" class="donate-link">Donate AUD$5</a>
-      </div>
+    <div class="invite-section">
+       <rank 
+          :score="score"
+          :wpm="wpm"/>
     </div>
 
+    <div class="invite-section">
+       <invite/>
+    </div>
+    <div class="footer">
+      For support, please contact <a href="mailto:support@type-fast.net">support@type-fast.net</a> <br/>
+      For advertising, please contact <a href="mailto:commerce@type-fast.net">commerce@type-fast.net</a>
+    </div>
   </div>
 </template>
 
@@ -114,45 +120,37 @@ h1 {
     box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
 
-.donation-section {
+
+.invite-section {
   margin-top: 20px;
   text-align: center;
   padding: 20px;
   background-color: #2a2a2a;
   border-radius: 12px;
   width: 100%;
-  max-width: 450px;
+  max-width: 800px;
 }
 
-.donation-section p {
+.invite-section p {
   color: #ccc;
   font-size: 1.1em;
   margin-bottom: 20px;
 }
 
-.donation-buttons {
+.invite-buttons {
   display: flex;
   justify-content: center;
   gap: 15px;
   flex-wrap: wrap;
 }
 
-.donate-link {
-  display: inline-block;
-  background-color: #ffc107;
-  color: #1a1a1a;
-  padding: 12px 24px;
-  font-size: 1.1em;
-  font-weight: bold;
-  text-decoration: none;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  transition: all 0.2s ease-in-out;
-}
-
-.donate-link:hover {
+button:hover {
   background-color: #ffca2c;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.footer {
+  font-size: 0.8em;
 }
 </style>
