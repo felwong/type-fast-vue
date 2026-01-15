@@ -133,6 +133,7 @@ const calculateWPM = () => {
 
 const startGame = () => {
   gameStarted.value = true;
+  $("#intro").hide();
   resetGame();
 };
 
@@ -269,18 +270,13 @@ onUnmounted(() => {
 <template>
   <div id="app-container">
     <div v-if="!gameStarted" class="start-container">
-      <h1>Boost Your Typing Speed and Accuracy with Our Fun Game</h1>
-      <h2>Ready to Challenge a Friend? Send a Custom Message Before You Leave!</h2>
-      <div>
-        Eg. Hey Bro, get well soon. | Can we be friends? | Wish you luck in the upcoming examinations!!!
-      </div>
+      
       <button @click="startGame" class="start-button">Start Game</button>
       <div>
         By continuing, you acknowledged you have read and agreed to the <router-link to="/terms">Terms and condition</router-link>
       </div>
       <div class="footer">
-        For support, please contact <a href="mailto:support@type-fast.net">support@type-fast.net</a> <br/>
-        For advertising, please contact <a href="mailto:commerce@type-fast.net">commerce@type-fast.net</a>
+        Support <a href="mailto:support@type-fast.net">support@type-fast.net</a> | Sales <a href="mailto:commerce@type-fast.net">commerce@type-fast.net</a> | Copyright 2026 type-fast.net
       </div>
     </div>
 
@@ -320,7 +316,6 @@ onUnmounted(() => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
   padding: 20px;
   box-sizing: border-box;
   text-align: center;
@@ -330,7 +325,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 30px;
+  gap: 20px;
 }
 
 .game-container {
@@ -452,6 +447,6 @@ input:checked + .slider:before {
 }
 
 .footer {
-  font-size: 2em;
+  font-size: 0.8em;
 }
 </style>
