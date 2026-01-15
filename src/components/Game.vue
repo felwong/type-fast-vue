@@ -30,6 +30,12 @@ const goodAudio = new Audio(mySound);
 const errorAudio =  new Audio(errorSound);
 const gameOverAudio = new Audio(gameOvermp3);
 const levelupAudio = new Audio(levelUp);
+let domain='https://type-fast.net:9999/game'
+
+if (process.env.NODE_ENV == 'development')  {
+  domain='http://localhost:9999/game/';
+}
+
 
 // --- New Game Mode Switches ---
 
@@ -37,7 +43,7 @@ const isCaseSensitive = ref(false);
 
 const fetchTextStream = () => {
   $.ajax({
-    url: 'https://type-fast.net:9999/game/getRandom',
+    url: domain+"getRandom",
     type: 'POST',
     contentType: "application/json;charset=utf-8",
     dataType: "json",
@@ -59,7 +65,7 @@ const fetchTextStream = () => {
 const fetchFriendMsg = () => {
 console.log(JSON.stringify(parmobj));
   $.ajax({
-    url: 'https://type-fast.net:9999/game/retrieve',
+    url:  domain+"retrieve",
     type: 'POST',
     contentType: "application/json;charset=utf-8",
     dataType: "json",
@@ -159,7 +165,7 @@ const resetGame = () => {
 
 const markRead = () => {
    $.ajax({
-    url: 'https://type-fast.net:9999/game/read',
+    url:  domain+"read",
     type: 'POST',
     contentType: "application/json;charset=utf-8",
     dataType: "json",
@@ -446,6 +452,6 @@ input:checked + .slider:before {
 }
 
 .footer {
-  font-size: 0.8em;
+  font-size: 2em;
 }
 </style>
