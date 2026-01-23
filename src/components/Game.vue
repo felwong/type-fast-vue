@@ -30,11 +30,7 @@ const goodAudio = new Audio(mySound);
 const errorAudio =  new Audio(errorSound);
 const gameOverAudio = new Audio(gameOvermp3);
 const levelupAudio = new Audio(levelUp);
-let domain='https://type-fast.net:9999/game'
-
-if (process.env.NODE_ENV == 'development')  {
-  domain='http://localhost:9999/game/';
-}
+let domain='https://type-fast.net:9999/game/';
 
 
 // --- New Game Mode Switches ---
