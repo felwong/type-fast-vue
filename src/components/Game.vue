@@ -261,19 +261,16 @@ onUnmounted(() => {
   }
 });
 
+onMounted(() => {
+  startGame();
+});
+
 </script>
 
 <template>
   <div id="app-container">
     <div v-if="!gameStarted" class="start-container">
-      
-      <button @click="startGame" class="start-button">Start Game</button>
-      <div>
-        By continuing, you acknowledged you have read and agreed to the <router-link to="/terms">Terms and condition</router-link>
-      </div>
-      <div class="footer">
-        Support <a href="mailto:support@type-fast.net">support@type-fast.net</a> | Sales <a href="mailto:commerce@type-fast.net">commerce@type-fast.net</a> | Copyright 2026 type-fast.net
-      </div>
+    
     </div>
 
     <div v-else-if="!gameOver" class="game-container">

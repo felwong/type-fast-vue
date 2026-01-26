@@ -38,19 +38,25 @@ You understand and agree that your use of the Game and its features (including, 
     <h2>Changes to Terms</h2>
     We reserve the right, at Our sole discretion, to modify or replace these Terms at any time. By continuing to access or use Our Service after those revisions become effective, you agree to be bound by the revised terms.
     <div>
-    <button @click="goBack">Go Back</button>
+    <button @click="goBack"> Go Back</button>
     </div>
   </div>
 </template>
 
 <script setup>
+import {  onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import $ from 'jquery';
 
 const router = useRouter();
 
 const goBack = () => {
   router.go(-1);
 };
+
+onMounted(() => {
+  $("#intro").hide();
+})
 </script>
 
 <style scoped>
